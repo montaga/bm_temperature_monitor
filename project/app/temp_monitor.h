@@ -7,11 +7,8 @@
 #include "common/ringbuffer.h"
 #include "hal/eeprom.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 typedef enum {
+    TEMP_STATE_UNKNOWN = -1,
     TEMP_STATE_CRITICAL_LOW,
     TEMP_STATE_NORMAL,
     TEMP_STATE_WARNING,
@@ -22,17 +19,14 @@ typedef struct {
     hw_revision_t revision;
     float filtered_temperature_c;
     temp_state_t state;
+    temp_state_t previous_state;
     bool has_sample;
     int16_t last_raw_value;
 } temp_monitor_t;
 
 void temp_monitor_init(temp_monitor_t *monitor, hw_revision_t revision);
 void temp_monitor_process(temp_monitor_t *monitor, ringbuffer_t *buffer);
-void temp_monitor_update_leds(const temp_monitor_t *monitor);
+void temp_monitor_update_leds(temp_monitor_t *monitor);
 void temp_monitor_print_status(const temp_monitor_t *monitor);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif // TEMP_MONITOR_H

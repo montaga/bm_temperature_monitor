@@ -47,6 +47,11 @@ static temp_state_t update_state_with_hysteresis(temp_state_t current, float tem
 {
     // update state based on current state and temperature with hysteresis to prevent rapid toggling
 
+    if (current == TEMP_STATE_UNKNOWN)
+    {
+        // no previous state, determine initial state without hysteresis
+        return temperature_to_target_state(temperature);
+    }
     if (current == TEMP_STATE_CRITICAL_LOW)
     {
         // go up states with hysteresis to normal state with hysteresis
@@ -76,7 +81,8 @@ void temp_monitor_init(temp_monitor_t *monitor, hw_revision_t revision)
 {
     monitor->revision = revision;
     monitor->filtered_temperature_c = 20.0f;
-    monitor->state = TEMP_STATE_NORMAL;
+    monitor->state = TEMP_STATE_UNKNOWN;
+    monitor->previous_state = TEMP_STATE_UNKNOWN;
     monitor->has_sample = false;
 }
 
@@ -95,11 +101,19 @@ void temp_monitor_process(temp_monitor_t *monitor, ringbuffer_t *buffer)
     monitor->state = update_state_with_hysteresis(monitor->state, monitor->filtered_temperature_c);
 }
 
-void temp_monitor_update_leds(const temp_monitor_t *monitor)
+void temp_monitor_update_leds(temp_monitor_t *monitor)
 {
+    // Only update GPIO if state has changed
+    if (monitor->state == monitor->previous_state)
+    {
+        return;
+    }
+
     gpio_set(LED_GREEN, monitor->state == TEMP_STATE_NORMAL);
     gpio_set(LED_YELLOW, monitor->state == TEMP_STATE_WARNING);
     gpio_set(LED_RED, monitor->state == TEMP_STATE_CRITICAL_HIGH || monitor->state == TEMP_STATE_CRITICAL_LOW);
+
+    monitor->previous_state = monitor->state;
 }
 
 void temp_monitor_print_status(const temp_monitor_t *monitor)
@@ -107,6 +121,9 @@ void temp_monitor_print_status(const temp_monitor_t *monitor)
     const char *state_name = "UNKNOWN";
     switch (monitor->state)
     {
+    case TEMP_STATE_UNKNOWN:
+        state_name = "UNKNOWN";
+        break;
     case TEMP_STATE_NORMAL:
         state_name = "GREEN";
         break;

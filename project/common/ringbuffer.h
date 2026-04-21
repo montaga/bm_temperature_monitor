@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#define RINGBUFFER_CAPACITY 256u
+#define RINGBUFFER_CAPACITY 1024
 
 typedef struct {
     int16_t buffer[RINGBUFFER_CAPACITY];

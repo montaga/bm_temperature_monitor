@@ -20,7 +20,8 @@ bool rb_push(ringbuffer_t *rb, int16_t value)
     const size_t next_head = (head + 1) & rb->mask;
     const size_t tail = atomic_load_explicit(&rb->tail, memory_order_acquire);
 
-    if (next_head == tail) {
+    if (next_head == tail)
+    {
         const size_t next_tail = (tail + 1) & rb->mask;
         atomic_store_explicit(&rb->tail, next_tail, memory_order_release);
     }
@@ -35,7 +36,8 @@ bool rb_pop(ringbuffer_t *rb, int16_t *value)
     const size_t tail = atomic_load_explicit(&rb->tail, memory_order_relaxed);
     const size_t head = atomic_load_explicit(&rb->head, memory_order_acquire);
 
-    if (tail == head) {
+    if (tail == head)
+    {
         return false;
     }
 
