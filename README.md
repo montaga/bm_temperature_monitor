@@ -38,28 +38,33 @@ For more options:
 make help
 ```
 
-## Run
+## Testing
+
+The project uses Google Test for unit testing of application logic. Tests focus on `temp_monitor` and `config_loader` functionality with mocked HAL implementations.
 
 ```sh
-./simulated_temperature_monitor
+make test
 ```
 
-To simulate Rev-A behavior:
-
-```shn
-SIM_HW_REV=A ./simulated_temperature_monitor
-```
+This will:
+- Download and build Google Test automatically
+- Compile and run tests for temperature monitoring logic
+- Compile and run tests for configuration loading
+- All HAL implementations are mocked during testing
 
 ## Project Structure
 
 - `project/main.c` - application entry and simulation orchestration
-- `project/app/` - temperature monitor logic
+- `project/app/` - application logic
+  - `config_loader.h/c` - configuration loading from I2C EEPROM
+  - `temp_monitor.h/c` - temperature monitoring and LED control logic
 - `project/hal/` - Hardware Abstraction Layer
   - `*.h` - platform-independent HAL interfaces
   - `mock/` - mock implementations for PC simulation
   - `hw/` - hardware placeholder implementations for bare-metal targets
 - `project/bsp/` - ISR simulation thread
 - `project/common/` - lock-free ringbuffer implementation
+- `tests/` - Google Test suite for application logic testing
 
 ## Hardware Abstraction Layer (HAL)
 

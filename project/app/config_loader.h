@@ -3,11 +3,9 @@
 
 #include <stdbool.h>
 
-
-#define EEPROM_ADDR 0x50
-
-#define REG_HW_REV 0x00
-#define REG_SERIAL 0x10
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef enum {
     HW_REV_A = 0,
@@ -20,5 +18,9 @@ typedef struct {
 } config_t;
 
 bool config_load(config_t *config);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // CONFIG_LOADER_H

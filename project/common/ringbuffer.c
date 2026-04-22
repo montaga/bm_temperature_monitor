@@ -22,8 +22,7 @@ bool rb_push(ringbuffer_t *rb, int16_t value)
 
     if (next_head == tail)
     {
-        const size_t next_tail = (tail + 1) & rb->mask;
-        atomic_store_explicit(&rb->tail, next_tail, memory_order_release);
+        return false; // Buffer is full
     }
 
     rb->buffer[head] = value;

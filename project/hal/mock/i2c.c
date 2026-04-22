@@ -5,6 +5,9 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
+
+#include "app/config_loader.h"
+
 #define EEPROM_ADDR 0x50
 
 // EEPROM Register Map (Mock)
@@ -21,12 +24,7 @@ static uint8_t eeprom_memory[256];
 
 static void eeprom_mock_init(void)
 {
-    static int initialized = 0;
-    if (initialized)
-        return;
-
-    initialized = 1;
-
+    // Always update based on current environment
     // hardware revision
     const char *env_rev = getenv("SIM_HW_REV");
     if (env_rev != NULL && env_rev[0] == 'A')
@@ -35,7 +33,7 @@ static void eeprom_mock_init(void)
     }
     else
     {
-        eeprom_memory[REG_HW_REV] = 1; // defailt to Rev-B
+        eeprom_memory[REG_HW_REV] = 1; // default to Rev-B
     }
 
     const char *serial = "ABC1234";

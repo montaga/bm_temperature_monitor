@@ -42,21 +42,28 @@ SRC_TEST = \
     project/common/ringbuffer.c
 
 TARGET = simulated_temperature_monitor
-TEST_TARGET = run_tests
+TEST_TARGET = temperature_monitor_tests
 
 all: $(TARGET)
 
 $(TARGET): $(SRC)
 	$(CC) $(CFLAGS) $(SRC) -o $(TARGET) $(LDFLAGS) -D EMULATED_ISR
 
-test: $(TEST_TARGET)
-	./$(TEST_TARGET)
+test: temperature_monitor_tests adc_isr_tests
+	./tests/build/temperature_monitor_tests
+	./tests/build/adc_isr_tests
 
-$(TEST_TARGET): tests/all_tests.c tests/unity.c $(SRC_TEST)
-	$(CC) $(CFLAGS) tests/all_tests.c tests/unity.c $(SRC_TEST) -o $(TEST_TARGET) $(LDFLAGS)
+temperature_monitor_tests: tests/CMakeLists.txt tests/test_temp_monitor.cpp tests/test_config_loader.cpp tests/test_ringbuffer.cpp
+	mkdir -p tests/build
+	cd tests/build && cmake .. && make
+
+adc_isr_tests: tests/CMakeLists.txt tests/test_adc_isr.cpp tests/mock_adc.c
+	mkdir -p tests/build
+	cd tests/build && rm -f CMakeCache.txt && cmake -DBUILD_ADC_ISR_TESTS=ON .. && make
 
 clean:
-	rm -f $(TARGET) $(TEST_TARGET)
+	rm -f $(TARGET)
+	rm -rf tests/build
 
 .PHONY: all test clean help
 
@@ -65,6 +72,5 @@ help:
 	@echo "  make                  - Build with mock HAL (default)"
 	@echo "  make HAL_IMPL=mock    - Build with mock HAL implementation"
 	@echo "  make HAL_IMPL=hw      - Build with hardware HAL implementation"
-	@echo "  make test             - Run unit tests with mock HAL"
-	@echo "  make test HAL_IMPL=hw - Run unit tests with hardware HAL"
+	@echo "  make test             - Build and run Google Test suite"
 	@echo "  make clean            - Remove build artifacts"
