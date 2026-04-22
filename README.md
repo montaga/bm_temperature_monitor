@@ -43,6 +43,14 @@ For more options:
 ```sh
 make help
 ```
+## Running the mock application
+
+After `make`, the mock-application can be executed using
+
+`SIM_HW_REV=B ./simulated_temperature_monitor`
+or
+`SIM_HW_REV=B ./simulated_temperature_monitor`
+depending on the needed hardware revision.
 
 ## Testing
 
@@ -62,6 +70,7 @@ This will:
 
 - `project/main.c` - application entry and simulation orchestration
 - `project/app/` - application logic
+  - `application.h/c` - the main application loop and component orchestration
   - `config_loader.h/c` - configuration loading from I2C EEPROM
   - `temp_monitor.h/c` - temperature monitoring and LED control logic
 - `project/hal/` - Hardware Abstraction Layer
@@ -96,6 +105,7 @@ The HAL provides a clean, platform-independent interface for hardware operations
 ### Design
 
 The application depends only on HAL interfaces (`.h` files), not implementation details. This allows seamless switching between mock and hardware implementations at compile time via the `HAL_IMPL` flag.
+
 
 ## Notes
 
