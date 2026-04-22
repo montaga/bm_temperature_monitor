@@ -1,21 +1,30 @@
 #include "hal/eeprom.h"
-#include <stdlib.h>
+#include "hal/i2c.h"
 #include <string.h>
+
+#define EEPROM_ADDR 0x50
+
+#define REG_HW_REV 0x00
+#define REG_SERIAL 0x10
 
 bool eeprom_read_config(config_t *config)
 {
-    if (config == NULL) {
+    if (config == NULL)
         return false;
-    }
 
-    const char *env_rev = getenv("SIM_HW_REV");
-    if (env_rev != NULL && env_rev[0] == 'A') {
-        config->revision = HW_REV_A;
-    } else {
-        config->revision = HW_REV_B;
-    }
+    uint8_t rev;
 
-    strncpy(config->serial, "ABC1234", sizeof(config->serial));
+    if (!i2c_read(EEPROM_ADDR, REG_HW_REV, &rev, 1))
+        return false;
+
+    config->revision = (rev == 0) ? HW_REV_A : HW_REV_B;
+
+    if (!i2c_read(EEPROM_ADDR, REG_SERIAL,
+                  (uint8_t *)config->serial,
+                  sizeof(config->serial)))
+        return false;
+
     config->serial[sizeof(config->serial) - 1] = '\0';
+
     return true;
 }

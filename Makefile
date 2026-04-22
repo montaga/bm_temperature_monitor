@@ -7,6 +7,7 @@ SRC = \
     project/hal/adc.c \
     project/hal/gpio.c \
     project/hal/eeprom.c \
+    project/hal/i2c.c \
     project/bsp/isr.c \
     project/common/ringbuffer.c
 
@@ -14,6 +15,7 @@ SRC_TEST = \
     project/app/temp_monitor.c \
     project/hal/adc.c \
     project/hal/eeprom.c \
+    project/hal/i2c.c \
     project/bsp/isr.c \
     project/common/ringbuffer.c
 
