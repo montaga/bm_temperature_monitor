@@ -14,6 +14,12 @@ This project implements a PC-based simulation of a bare-metal temperature monito
 - Hysteresis-based LED state machine for OK / Warning / Critical
 - Configuration loading for hardware revision and serial number
 
+
+## Dataflow diagram
+
+![dataflow diagram](./doc/dataflow_diagram.png)
+
+
 ## Build
 
 From the repository root, build with the mock HAL implementation (default):
