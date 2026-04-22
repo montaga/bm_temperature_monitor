@@ -1,4 +1,6 @@
-#include "hal/eeprom.h"
+/* Application-level configuration loader */
+
+#include "app/config_loader.h"
 #include "hal/i2c.h"
 #include <string.h>
 
@@ -7,7 +9,7 @@
 #define REG_HW_REV 0x00
 #define REG_SERIAL 0x10
 
-bool eeprom_read_config(config_t *config)
+bool config_load(config_t *config)
 {
     if (config == NULL)
         return false;

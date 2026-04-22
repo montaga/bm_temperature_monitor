@@ -4,8 +4,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "app/config_loader.h"
 #include "common/ringbuffer.h"
-#include "hal/eeprom.h"
 
 typedef enum {
     TEMP_STATE_UNKNOWN = -1,

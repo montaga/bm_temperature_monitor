@@ -1,3 +1,5 @@
+/* MOCK IMPLEMENTATION */
+
 #include "hal/adc.h"
 #include <math.h>
 #include <stdint.h>

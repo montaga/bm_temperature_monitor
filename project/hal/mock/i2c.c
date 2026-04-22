@@ -1,4 +1,6 @@
-#include "i2c.h"
+/* MOCK IMPLEMENTATION */
+
+#include "hal/i2c.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>

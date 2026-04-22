@@ -2,7 +2,7 @@
 #define ADC_H
 
 #include <stdint.h>
-#include "hal/eeprom.h"
+#include "app/config_loader.h"
 
 void adc_init(hw_revision_t revision);
 int16_t adc_read(void);

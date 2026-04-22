@@ -9,9 +9,10 @@
 
 static ringbuffer_t *s_buffer = NULL;
 static atomic_bool s_isr_running = false;
-static pthread_t s_isr_thread;
+
 
 #ifdef EMULATED_ISR
+static pthread_t s_isr_thread;
 // isr_thread_entry will not be implemented on actual hardware
 // Instead adc_isr would be called by the hardware interrupt mechanism
 static void *isr_thread_entry(void *arg)
@@ -56,5 +57,7 @@ bool isr_start(ringbuffer_t *buffer)
 void isr_stop(void)
 {
     atomic_store_explicit(&s_isr_running, false, memory_order_release);
+#ifdef EMULATED_ISR
     pthread_join(s_isr_thread, NULL);
+#endif
 }

@@ -1,3 +1,5 @@
+/* MOCK IMPLEMENTATION */
+
 #include "hal/gpio.h"
 #include <stdio.h>
 

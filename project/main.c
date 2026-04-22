@@ -5,11 +5,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "app/config_loader.h"
 #include "app/temp_monitor.h"
 #include "bsp/isr.h"
 #include "common/ringbuffer.h"
 #include "hal/adc.h"
-#include "hal/eeprom.h"
 #include "hal/gpio.h"
 
 int main(int argc, char *argv[])
@@ -18,9 +18,9 @@ int main(int argc, char *argv[])
     (void)argv;
 
     config_t config;
-    if (!eeprom_read_config(&config))
+    if (!config_load(&config))
     {
-        fprintf(stderr, "ERROR: Failed to read EEPROM config\n");
+        fprintf(stderr, "ERROR: Failed to load configuration\n");
         return EXIT_FAILURE;
     }
 
@@ -34,13 +34,11 @@ int main(int argc, char *argv[])
     ringbuffer_t sensor_buffer;
     rb_init(&sensor_buffer);
 
-#ifdef EMULATED_ISR
     if (!isr_start(&sensor_buffer))
     {
         fprintf(stderr, "ERROR: Failed to start ISR thread\n");
         return EXIT_FAILURE;
     }
-#endif
 
     temp_monitor_t monitor;
     temp_monitor_init(&monitor, config.revision);
@@ -55,8 +53,6 @@ int main(int argc, char *argv[])
         usleep(loop_interval_us);
     }
 
-#ifdef EMULATED_ISR
     isr_stop();
-#endif
     return EXIT_SUCCESS;
 }
