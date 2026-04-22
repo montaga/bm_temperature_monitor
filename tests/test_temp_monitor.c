@@ -29,7 +29,7 @@ void test_temp_monitor_init(void) {
     temp_monitor_t monitor = {0};
     temp_monitor_init(&monitor, HW_REV_A);
     TEST_ASSERT_EQUAL(HW_REV_A, monitor.revision);
-    TEST_ASSERT_EQUAL_FLOAT(20.0f, monitor.filtered_temperature_c);
+    TEST_ASSERT_EQUAL(200, monitor.filtered_temperature_dC);
     TEST_ASSERT_EQUAL(TEMP_STATE_UNKNOWN, monitor.state);
     TEST_ASSERT_FALSE(monitor.has_sample);
 }
@@ -132,7 +132,7 @@ void test_temp_monitor_conversion_rev_a(void) {
 
     rb_push(&rb, 25);
     temp_monitor_process(&monitor, &rb);
-    TEST_ASSERT_EQUAL_FLOAT(25.0f, monitor.filtered_temperature_c);
+    TEST_ASSERT_EQUAL(250, monitor.filtered_temperature_dC);
 }
 
 void test_temp_monitor_conversion_rev_b(void) {
@@ -143,7 +143,7 @@ void test_temp_monitor_conversion_rev_b(void) {
 
     rb_push(&rb, 250); // 25.0°C
     temp_monitor_process(&monitor, &rb);
-    TEST_ASSERT_EQUAL_FLOAT(25.0f, monitor.filtered_temperature_c);
+    TEST_ASSERT_EQUAL(250, monitor.filtered_temperature_dC);
 }
 
 void test_temp_monitor_filtering(void) {
@@ -154,10 +154,10 @@ void test_temp_monitor_filtering(void) {
 
     rb_push(&rb, 20);
     temp_monitor_process(&monitor, &rb);
-    TEST_ASSERT_EQUAL_FLOAT(20.0f, monitor.filtered_temperature_c);
+    TEST_ASSERT_EQUAL(200, monitor.filtered_temperature_dC);
 
     rb_push(&rb, 30);
     temp_monitor_process(&monitor, &rb);
-    // alpha = 0.1, so 20 + 0.1*(30-20) = 21
-    TEST_ASSERT_FLOAT_WITHIN(0.1f, 21.0f, monitor.filtered_temperature_c);
+    // alpha = 1/8, so 20 + 1/8*(30-20) = 21.25 -> 212 after rounding
+    TEST_ASSERT_EQUAL(212, monitor.filtered_temperature_dC);
 }

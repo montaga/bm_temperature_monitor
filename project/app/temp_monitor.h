@@ -17,7 +17,7 @@ typedef enum {
 
 typedef struct {
     hw_revision_t revision;
-    float filtered_temperature_c;
+    int16_t filtered_temperature_dC; // Store temperature in deci-°C to avoid floating point
     temp_state_t state;
     temp_state_t previous_state;
     bool has_sample;
