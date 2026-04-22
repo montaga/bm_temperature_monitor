@@ -40,7 +40,7 @@ make help
 
 ## Testing
 
-The project uses Google Test for unit testing of application logic. Tests focus on `temp_monitor` and `config_loader` functionality with mocked HAL implementations.
+The project uses Google Test for unit testing of application logic.
 
 ```sh
 make test

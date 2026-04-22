@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "common/ringbuffer.h"
 #include "bsp/isr.h"
+#include "hal/adc.h"
 
 // Forward declaration for test mock function
 extern "C" {

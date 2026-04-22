@@ -5,54 +5,27 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "app/config_loader.h"
-#include "app/temp_monitor.h"
-#include "bsp/isr.h"
-#include "common/ringbuffer.h"
-#include "hal/adc.h"
-#include "hal/gpio.h"
+#include "app/application.h"
 
 int main(int argc, char *argv[])
 {
     (void)argc;
     (void)argv;
 
-    config_t config;
-    if (!config_load(&config))
-    {
-        fprintf(stderr, "ERROR: Failed to load configuration\n");
+    app_context_t ctx;
+
+    if (!app_init(&ctx)) {
+        fprintf(stderr, "ERROR: Failed to initialize application\n");
         return EXIT_FAILURE;
     }
-
-    printf("[BOOT] Hardware revision: %s\n",
-           config.revision == HW_REV_A ? "Rev-A" : "Rev-B");
-    printf("[BOOT] Serial number: %s\n", config.serial);
-
-    adc_init(config.revision);
-    gpio_init();
-
-    ringbuffer_t sensor_buffer;
-    rb_init(&sensor_buffer);
-
-    if (!isr_start(&sensor_buffer))
-    {
-        fprintf(stderr, "ERROR: Failed to start ISR thread\n");
-        return EXIT_FAILURE;
-    }
-
-    temp_monitor_t monitor;
-    temp_monitor_init(&monitor, config.revision);
 
     // main loop controlling the LEDs based on the latest temperature reading and state
     const int loop_interval_us = 10000; // no more than 100 Hz is needed for LED updates
-    while (true)
-    {
-        temp_monitor_process(&monitor, &sensor_buffer);
-        temp_monitor_update_leds(&monitor);
-        temp_monitor_print_status(&monitor);
+    while (true) {
+        app_process(&ctx);
         usleep(loop_interval_us);
     }
 
-    isr_stop();
+    app_cleanup(&ctx);
     return EXIT_SUCCESS;
 }

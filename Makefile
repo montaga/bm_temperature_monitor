@@ -27,6 +27,7 @@ SRC = \
     project/main.c \
     project/app/config_loader.c \
     project/app/temp_monitor.c \
+    project/app/application.c \
     $(HAL_ADC) \
     $(HAL_GPIO) \
     $(HAL_I2C) \
@@ -36,6 +37,7 @@ SRC = \
 SRC_TEST = \
     project/app/config_loader.c \
     project/app/temp_monitor.c \
+    project/app/application.c \
     $(HAL_ADC) \
     $(HAL_I2C) \
     project/bsp/isr.c \
@@ -49,17 +51,12 @@ all: $(TARGET)
 $(TARGET): $(SRC)
 	$(CC) $(CFLAGS) $(SRC) -o $(TARGET) $(LDFLAGS) -D EMULATED_ISR
 
-test: temperature_monitor_tests adc_isr_tests
-	./tests/build/temperature_monitor_tests
-	./tests/build/adc_isr_tests
+test: $(TEST_TARGET)
+	./tests/build/$(TEST_TARGET)
 
-temperature_monitor_tests: tests/CMakeLists.txt tests/test_temp_monitor.cpp tests/test_config_loader.cpp tests/test_ringbuffer.cpp
+$(TEST_TARGET): tests/CMakeLists.txt tests/test_temp_monitor.cpp tests/test_config_loader.cpp tests/test_ringbuffer.cpp tests/test_adc_isr.cpp tests/test_application.cpp
 	mkdir -p tests/build
 	cd tests/build && cmake .. && make
-
-adc_isr_tests: tests/CMakeLists.txt tests/test_adc_isr.cpp tests/mock_adc.c
-	mkdir -p tests/build
-	cd tests/build && rm -f CMakeCache.txt && cmake -DBUILD_ADC_ISR_TESTS=ON .. && make
 
 clean:
 	rm -f $(TARGET)
