@@ -19,6 +19,9 @@ This project implements a PC-based simulation of a bare-metal temperature monito
 
 ![dataflow diagram](./doc/dataflow_diagram.png)
 
+## Architecture diagram
+
+![architecture_diagram](./doc/architecture_diagram.png)
 
 ## Build
 

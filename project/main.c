@@ -14,14 +14,16 @@ int main(int argc, char *argv[])
 
     app_context_t ctx;
 
-    if (!app_init(&ctx)) {
+    if (!app_init(&ctx))
+    {
         fprintf(stderr, "ERROR: Failed to initialize application\n");
         return EXIT_FAILURE;
     }
 
     // main loop controlling the LEDs based on the latest temperature reading and state
     const int loop_interval_us = 10000; // no more than 100 Hz is needed for LED updates
-    while (true) {
+    while (true)
+    {
         app_process(&ctx);
         usleep(loop_interval_us);
     }
