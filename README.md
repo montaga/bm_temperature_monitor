@@ -2,8 +2,48 @@
 
 This project implements a PC-based simulation of a bare-metal temperature monitoring system.
 
-## Features
 
+## Minimalistic Solution
+
+A first intuitive implementation could look like this:
+
+```c
+
+static volatile bool hardware_revision_is_rev_B;
+
+int main() {
+    hardware_revision_is_rev_B = read_hardware_revision_from_eeprom_via_i2c();
+
+    adc_init();          // config ADC
+    timer_init();        // config 100µs trigger
+    enable_interrupts(); // now ISR can fire
+
+    while(1) {}
+    return 0;
+}
+
+// interrupt triggered every 100µs by hardware timer
+void adc_isr(void)
+{
+    int16_t raw = adc_read();
+
+    // apply hardware-dependent scaling
+    int16_t temp_dC = hardware_revision_is_rev_B ? raw : (10 * raw);
+
+    // direct decision + output in ISR
+    gpio_set(LED_GREEN,  temp_dC < 850);
+    gpio_set(LED_YELLOW, temp_dC >= 850);
+    gpio_set(LED_RED,    temp_dC >= 1050 || temp_dC < 50);
+}
+```
+
+While this solution is very compact, it does not scale well with increasing system complexity. 
+
+Furthremore, task clarification is needed: Is only one LED active or can be multiple LEDs active. Is some flickering in the LEDs due to adc noise acceptable?
+
+## Features of a more complex solution
+
+- Only one LED is active.
 - Simulated ADC sampling at approximately 10 kHz via ISR thread
 - Lock-free single-producer single-consumer ringbuffer
 - 100 Hz main loop processing
